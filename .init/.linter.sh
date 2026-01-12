@@ -1,9 +1,18 @@
 #!/bin/bash
+set -euo pipefail
+
 cd /home/kavia/workspace/code-generation/simple-notes-application-51884-51899/notes_backend
-source venv/bin/activate
-flake8 .
-LINT_EXIT_CODE=$?
-if [ $LINT_EXIT_CODE -ne 0 ]; then
-  exit 1
+
+# Ensure a venv exists for linting in non-interactive CI environments.
+if [ ! -d ".venv" ]; then
+  python3 -m venv .venv
 fi
+
+# shellcheck disable=SC1091
+source .venv/bin/activate
+
+python3 -m pip install --upgrade pip >/dev/null
+pip install -r requirements.txt >/dev/null
+
+flake8 .
 
